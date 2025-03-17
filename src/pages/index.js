@@ -11,6 +11,7 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function Home() {
   const api = "https://jsonplaceholder.typicode.com";
   const [apiData, getApiData] = useState([]);
+  const [addData, getAddDat] = useState({ addTitle: "", addDescription: "" });
 
   useEffect(() => {
     getUserData();
@@ -42,6 +43,30 @@ export default function Home() {
     }
   }
 
+  const handleInputChange = (event) => {
+    const name = event.target.name;
+    const value = event.target.value;
+    getAddDat({ ...addData, [name]: value.toLowerCase().trim() }); //[name]:value update dynamic value 
+  }
+
+  const handleAdd = async () => {
+    try {
+      const object = {
+        body: addData.addDescription,
+        id: "",
+        title: addData.addTitle,
+        userId: Date.now()
+      }
+      const response = await axios.post(api + "/posts", object);
+      toast.success('Successfully created!');
+      getApiData([...apiData, response.data]); //response one object copying in apidata and syntax create new array
+    } catch (error) {
+      console.log(error.message);
+      console.log(error.response.data);
+      console.log(error.response.status);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -53,7 +78,7 @@ export default function Home() {
 
       <main className="bg-secondary p-2">
         <header className='d-flex justify-content-center'>
-          <a href="https://nandakishore695.github.io/axios-curd-project/">
+          <a href="https://github.com/Nandakishore695/axios-curd-project">
             <Image src={githubImage} alt="gitHub Nandakishore695" width={70} className="float-right" />
           </a>
           <h1 className='text-white m-4'>Vite + React + Axios + Curd</h1>
@@ -63,7 +88,7 @@ export default function Home() {
             position="top-center"
             reverseOrder={false}
           />
-          <Add />
+          <Add handleInputChange={handleInputChange} handleAdd={handleAdd} />
           <Card apiDataObjectProps={apiData} handleDelete={handleDelete} />
         </div>
 
