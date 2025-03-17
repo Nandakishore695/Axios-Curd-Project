@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Card = ({ apiDataObjectProps }) => {
+const Card = ({ apiDataObjectProps, handleDelete,  }) => {
     return (
         <div className="row">
             {apiDataObjectProps?.map((item, index) => {
@@ -11,7 +11,7 @@ const Card = ({ apiDataObjectProps }) => {
                             <p className="card-text text-start">Description: - {item.body}</p>
                             <>
                                 <button className='m-1 rounded' >Edit</button>
-                                <button className='m-1 rounded' >Delete</button>
+                                <button className='m-1 rounded' onClick={() => handleDelete(item.id)}>Delete</button>
                             </>
                         </div>
                     </div>

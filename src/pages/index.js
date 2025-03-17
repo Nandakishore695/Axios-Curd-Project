@@ -5,7 +5,9 @@ import Card from '../pages/cards.js';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Image from "next/image.js";
-import githubImage from "../../public/github.svg"
+import githubImage from "../../public/github.svg";
+import toast, { Toaster } from 'react-hot-toast';
+
 export default function Home() {
   const api = "https://jsonplaceholder.typicode.com";
   const [apiData, getApiData] = useState([]);
@@ -25,6 +27,21 @@ export default function Home() {
     }
   }
 
+  const handleDelete = async (id) => {
+    try {
+      const responseApi = await axios.delete(api + `/posts/${id}`);
+      if (responseApi.status === 200) {
+        const filterCard = apiData.filter((currentItem) => currentItem.id !== id);
+        getApiData(filterCard);
+        toast.success('Successfully deleted!');
+      }
+    } catch (error) {
+      console.log(error.message);
+      console.log(error.response.data);
+      console.log(error.response.status);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -36,14 +53,18 @@ export default function Home() {
 
       <main className="bg-secondary p-2">
         <header className='d-flex justify-content-center'>
-          <a href="https://github.com/Nandakishore695/Axios-Curd-Project">
+          <a href="https://nandakishore695.github.io/axios-curd-project/">
             <Image src={githubImage} alt="gitHub Nandakishore695" width={70} className="float-right" />
           </a>
           <h1 className='text-white m-4'>Vite + React + Axios + Curd</h1>
         </header>
         <div className='container  text-center '>
+          <Toaster
+            position="top-center"
+            reverseOrder={false}
+          />
           <Add />
-          <Card apiDataObjectProps={apiData} />
+          <Card apiDataObjectProps={apiData} handleDelete={handleDelete} />
         </div>
 
       </main>
