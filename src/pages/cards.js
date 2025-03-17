@@ -3,7 +3,7 @@ import React from 'react'
 const Card = ({ apiDataObjectProps }) => {
     return (
         <div className="row">
-            {apiDataObjectProps.map((item, index) => {
+            {apiDataObjectProps?.map((item, index) => {
                 return <div className="col-xl-4" key={index}>
                     <div className="card mt-2" >
                         <div className="card-body" key={item.id}>
