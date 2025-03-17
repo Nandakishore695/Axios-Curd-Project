@@ -1,7 +1,7 @@
 import Head from "next/head";
 import React, { useEffect, useState } from 'react'
-import Add from './add.js';
-import Card from './cards.js';
+import Add from '../pages/add.js';
+import Card from '../pages/cards.js';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Image from "next/image.js";
