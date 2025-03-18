@@ -11,7 +11,8 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function Home() {
   const api = "https://jsonplaceholder.typicode.com";
   const [apiData, getApiData] = useState([]);
-  const [addData, getAddDat] = useState({ addTitle: "", addDescription: "" });
+  const [addData, setAddData] = useState({ title: "", description: "" });
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     getUserData();
@@ -46,20 +47,51 @@ export default function Home() {
   const handleInputChange = (event) => {
     const name = event.target.name;
     const value = event.target.value;
-    getAddDat({ ...addData, [name]: value.toLowerCase().trim() }); //[name]:value update dynamic value 
+    setAddData({ ...addData, [name]: value.toLowerCase().trim() }); //[name]:value update dynamic value 
   }
 
-  const handleAdd = async () => {
+  const handleAdd = async (event) => {
+    event.preventDefault();
     try {
       const object = {
-        body: addData.addDescription,
+        body: addData.description,
         id: "",
-        title: addData.addTitle,
+        title: addData.title,
         userId: Date.now()
       }
       const response = await axios.post(api + "/posts", object);
       toast.success('Successfully created!');
       getApiData([...apiData, response.data]); //response one object copying in apidata and syntax create new array
+      setAddData({ title: "", description: "" });
+    } catch (error) {
+      console.log(error.message);
+      console.log(error.response.data);
+      console.log(error.response.status);
+    }
+  }
+
+  const handleEditItem = (item) => {
+    setSelectedItem(item); // Create a shallow copy
+    setAddData({ title: item.title, description: item.body });
+  }
+
+  const handleEditSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      const object = {
+        body: addData.description,
+        id: selectedItem.id,
+        title: addData.title,
+        userId: selectedItem.userId
+      }
+      await axios.put(api + `/posts/${selectedItem.id}`, { object });
+      const updatedApiData = apiData.map((item) =>
+        item.id === selectedItem.id ? { ...item, title: addData.title, body: addData.description } : item
+      );
+      toast.success('Successfully Updated!');
+      getApiData(updatedApiData); //response one object copying in apidata and syntax create new array
+      setSelectedItem(null);
+      setAddData({ title: "", description: "" });
     } catch (error) {
       console.log(error.message);
       console.log(error.response.data);
@@ -84,17 +116,11 @@ export default function Home() {
           <h1 className='text-white m-4'>Vite + React + Axios + Curd</h1>
         </header>
         <div className='container  text-center '>
-          <Toaster
-            position="top-center"
-            reverseOrder={false}
-          />
-          <Add handleInputChange={handleInputChange} handleAdd={handleAdd} />
-          <Card apiDataObjectProps={apiData} handleDelete={handleDelete} />
+          <Toaster position="top-center" reverseOrder={false} />
+          <Add handleInputChange={handleInputChange} handleSubmit={handleAdd} isValue={addData} handleEditSubmit={handleEditSubmit} />
+          <Card apiDataObjectProps={apiData} handleDelete={handleDelete} handleEditItem={handleEditItem} />
         </div>
-
       </main>
-
-
     </>
   );
 }
